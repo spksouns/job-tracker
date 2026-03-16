@@ -1,5 +1,8 @@
 package com.github.spksouns.job_tracker.controller;
 
+import com.github.spksouns.job_tracker.config.JwtUtil;
+import com.github.spksouns.job_tracker.dto.LoginRequest;
+import jakarta.validation.Valid;
 import com.github.spksouns.job_tracker.entity.User;
 import com.github.spksouns.job_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -19,8 +23,12 @@ public class AuthController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtil jwtUtil;  // ← add this!
+
+
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody @Valid User user) {
         if(userRepository.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email already exists!");
         }
@@ -29,7 +37,7 @@ public class AuthController {
         return ResponseEntity.ok("User registered successfully!");
     }
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User loginRequest) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
         Optional<User> user = userRepository.findByEmail(loginRequest.getEmail());
 
         if(user.isEmpty()) {
@@ -39,7 +47,13 @@ public class AuthController {
         if(!passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
             return ResponseEntity.badRequest().body("Invalid password!");
         }
+        // Generate JWT token!
+        String token = jwtUtil.generateToken(user.get().getEmail());
 
-        return ResponseEntity.ok("Login successful! JWT coming soon!");
+        return ResponseEntity.ok(Map.of(
+                "token", token,
+                "email", user.get().getEmail(),
+                "name", user.get().getName()
+        ));
     }
 }

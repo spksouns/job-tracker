@@ -1,5 +1,6 @@
 package com.github.spksouns.job_tracker.controller;
 
+import jakarta.validation.Valid;
 import com.github.spksouns.job_tracker.entity.Company;
 import com.github.spksouns.job_tracker.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,12 @@ public class CompanyController {
     }
 
     @PostMapping
-    public Company createCompany(@RequestBody Company company) {
+    public Company createCompany(@RequestBody @Valid Company company) {
         return companyService.createCompany(company);
     }
 
     @PutMapping("/{id}")
-    public Company updateCompany(@PathVariable Long id, @RequestBody Company company) {
+    public Company updateCompany(@PathVariable Long id, @RequestBody @Valid Company company) {
         return companyService.updateCompany(id, company);
     }
 

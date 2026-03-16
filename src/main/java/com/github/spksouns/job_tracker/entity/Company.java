@@ -1,5 +1,6 @@
 package com.github.spksouns.job_tracker.entity;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Company name is required!")
     @Column(nullable = false)
     private String name;
 

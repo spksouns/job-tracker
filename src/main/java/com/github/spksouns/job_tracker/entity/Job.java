@@ -1,6 +1,10 @@
 package com.github.spksouns.job_tracker.entity;
+
+import jakarta.validation.constraints.NotBlank;
 import jakarta.persistence.*;
 import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -17,19 +21,23 @@ public class Job {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @NotNull(message = "Company is required!")
     @ManyToOne
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
+    @NotBlank(message = "Role is required!")
     @Column(nullable = false)
     private String role;
 
     private Integer salaryMin;
     private Integer salaryMax;
 
+    @NotNull(message = "Work mode is required!")
     @Enumerated(EnumType.STRING)
     private WorkMode workMode;
 
+    @NotNull(message = "Status is required!")
     @Enumerated(EnumType.STRING)
     private Status status;
 

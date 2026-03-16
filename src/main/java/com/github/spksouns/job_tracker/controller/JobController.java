@@ -1,5 +1,6 @@
 package com.github.spksouns.job_tracker.controller;
 
+import jakarta.validation.Valid;
 import com.github.spksouns.job_tracker.entity.Job;
 import com.github.spksouns.job_tracker.service.JobService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,12 @@ public class JobController {
     }
 
     @PostMapping
-    public Job createJob(@RequestBody Job job) {
+    public Job createJob(@RequestBody @Valid Job job) {
         return jobService.createJob(job);
     }
 
     @PutMapping("/{id}")
-    public Job updateJob(@PathVariable Long id, @RequestBody Job job) {
+    public Job updateJob(@PathVariable Long id, @RequestBody @Valid Job job) {
         return jobService.updateJob(id, job);
     }
 
