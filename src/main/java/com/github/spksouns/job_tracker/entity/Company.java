@@ -20,4 +20,8 @@ public class Company {
     private String website;
 
     private String location;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

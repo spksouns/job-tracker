@@ -1,6 +1,7 @@
 package com.github.spksouns.job_tracker.service;
 
 import com.github.spksouns.job_tracker.entity.Company;
+import com.github.spksouns.job_tracker.entity.User;
 import com.github.spksouns.job_tracker.repository.CompanyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,16 +26,37 @@ public class CompanyService {
         return companyRepository.save(company);
     }
 
-    public Company updateCompany(Long id, Company updated) {
+    public List<Company> getCompaniesByUser(Long userId) {
+        return companyRepository.findByUserId(userId);
+    }
+
+    public Company updateCompany(Long id, Company updated,
+                                 User currentUser) {
         Company company = companyRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Company not found!"));
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found!"));
+
+        if (!company.getUser().getId()
+                .equals(currentUser.getId())) {
+            throw new RuntimeException("Unauthorized!");
+        }
+
         company.setName(updated.getName());
         company.setWebsite(updated.getWebsite());
         company.setLocation(updated.getLocation());
         return companyRepository.save(company);
     }
 
-    public void deleteCompany(Long id) {
+    public void deleteCompany(Long id, User currentUser) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Company not found!"));
+
+        if (!company.getUser().getId()
+                .equals(currentUser.getId())) {
+            throw new RuntimeException("Unauthorized!");
+        }
+
         companyRepository.deleteById(id);
     }
 }

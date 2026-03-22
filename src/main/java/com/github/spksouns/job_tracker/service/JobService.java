@@ -1,6 +1,7 @@
 package com.github.spksouns.job_tracker.service;
 
 import com.github.spksouns.job_tracker.entity.Job;
+import com.github.spksouns.job_tracker.entity.User;
 import com.github.spksouns.job_tracker.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,16 @@ public class JobService {
         return jobRepository.save(job);
     }
 
-    public Job updateJob(Long id, Job updated) {
+    public Job updateJob(Long id, Job updated, User currentUser) {
         Job job = jobRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Job not found!"));
+                .orElseThrow(() ->
+                        new RuntimeException("Job not found!"));
+
+        // Ownership check!
+        if(!job.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Unauthorized!");
+        }
+
         job.setRole(updated.getRole());
         job.setSalaryMin(updated.getSalaryMin());
         job.setSalaryMax(updated.getSalaryMax());
@@ -43,7 +51,16 @@ public class JobService {
         return jobRepository.save(job);
     }
 
-    public void deleteJob(Long id) {
+    public void deleteJob(Long id, User currentUser) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Job not found!"));
+
+        // Ownership check!
+        if(!job.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Unauthorized!");
+        }
+
         jobRepository.deleteById(id);
     }
 }

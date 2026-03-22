@@ -2,11 +2,13 @@ package com.github.spksouns.job_tracker.controller;
 
 import com.github.spksouns.job_tracker.config.JwtUtil;
 import com.github.spksouns.job_tracker.dto.LoginRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import com.github.spksouns.job_tracker.entity.User;
 import com.github.spksouns.job_tracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,5 +57,11 @@ public class AuthController {
                 "email", user.get().getEmail(),
                 "name", user.get().getName()
         ));
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(
+            HttpServletRequest request) {
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("Logged out successfully!");
     }
 }
