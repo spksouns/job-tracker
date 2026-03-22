@@ -29,6 +29,52 @@ Full stack job application tracker — Spring Boot + React + PostgreSQL
 - ⏳ React frontend
 - ⏳ Deploy on Railway + Vercel
 
+## Database Design
+
+### Entity Relationship
+```
+users (1) ──── (many) companies
+users (1) ──── (many) jobs
+companies (1) ──── (many) jobs
+```
+
+### Tables
+
+#### users
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGINT (PK) | Auto generated |
+| name | VARCHAR | User full name |
+| email | VARCHAR (unique) | Login email |
+| password | VARCHAR | BCrypt hashed |
+| created_at | TIMESTAMP | Account creation time |
+
+#### companies
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGINT (PK) | Auto generated |
+| user_id | BIGINT (FK) | Owner user |
+| name | VARCHAR | Company name |
+| website | VARCHAR | Company website |
+| location | VARCHAR | Company location |
+
+#### jobs
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGINT (PK) | Auto generated |
+| user_id | BIGINT (FK) | Owner user |
+| company_id | BIGINT (FK) | Applied company |
+| role | VARCHAR | Job role/title |
+| salary_min | INTEGER | Minimum salary |
+| salary_max | INTEGER | Maximum salary |
+| status | ENUM | APPLIED/SHORTLISTED/INTERVIEW/REJECTED/OFFER |
+| work_mode | ENUM | REMOTE/ONSITE/HYBRID |
+| platform | VARCHAR | LinkedIn/Naukri etc |
+| job_url | VARCHAR | Job posting URL |
+| notes | TEXT | Personal notes |
+| applied_date | DATE | Application date |
+| last_updated | TIMESTAMP | Last update time |
+
 ## API Documentation
 After running locally, visit:
 ```
