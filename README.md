@@ -54,19 +54,50 @@ http://localhost:8080/swagger-ui/index.html
 | DELETE | /api/jobs/{id} | Delete job | ✅ |
 
 ## Setup
+
+### 1. Clone repo
 ```bash
-# Clone repo
 git clone https://github.com/spksouns/job-tracker.git
+```
 
-# Copy properties template
-cp src/main/resources/application.properties.example \
-   src/main/resources/application.properties
+### 2. Setup PostgreSQL
+- Install PostgreSQL
+- Create database: `job_tracker`
 
-# Set environment variables
+### 3. Setup Google OAuth2 Credentials
+1. Go to [Google Cloud Console](https://console.cloud.google.com)
+2. Create new project → `job-tracker`
+3. Navigate to **APIs & Services → OAuth consent screen**
+    - User Type: External → Create
+    - Fill App name, support email → Save
+4. Navigate to **APIs & Services → Credentials**
+    - Click **Create Credentials → OAuth Client ID**
+    - Application type: **Web application**
+    - Authorized redirect URI:
+```
+     http://localhost:8080/login/oauth2/code/google
+```
+- Click Create → Copy **Client ID** and **Client Secret**
+
+### 4. Set environment variables
+```bash
 JWT_SECRET=your-secret-key-minimum-32-chars
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
+```
 
-# Run
+### 5. Configure application.properties
+```bash
+cp src/main/resources/application.properties.example \
+   src/main/resources/application.properties
+```
+Fill in your PostgreSQL password and environment variables.
+
+### 6. Run
+```bash
 ./gradlew bootRun
 ```
+
+### 7. Test
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+- Google login: http://localhost:8080/oauth2/authorization/google
