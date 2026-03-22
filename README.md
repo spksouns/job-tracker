@@ -9,10 +9,10 @@ Full stack job application tracker — Spring Boot + React + PostgreSQL
 - Spring Data JPA + Hibernate
 - PostgreSQL
 - Spring Security + BCrypt
-- JWT Authentication ✅
-- Google OAuth2 Login ✅
-- Swagger UI (OpenAPI 3.0) ✅
-- Jakarta Validation ✅
+- JWT Authentication
+- Google OAuth2 Login
+- Swagger UI (OpenAPI 3.0)
+- Jakarta Validation
 
 ### Frontend (Coming Soon)
 - React + Vite + TailwindCSS
