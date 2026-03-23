@@ -5,7 +5,6 @@ Full stack job application tracker — Spring Boot + React + PostgreSQL
 ## Live Demo
 🚀 **Live API:** https://job-tracker-production-939a.up.railway.app/swagger-ui/index.html
 
-📦 **GitHub:** https://github.com/spksouns/job-tracker
 
 ---
 
