@@ -15,7 +15,7 @@ Full stack job application tracker — Spring Boot + React + PostgreSQL
 - Spring Data JPA + Hibernate
 - PostgreSQL
 - Spring Security + BCrypt
-- JWT Authentication (jjwt 0.12.6)
+- JWT Authentication (jwt 0.12.6)
 - Google OAuth2 Login
 - Swagger UI (springdoc-openapi 2.8.6)
 - Jakarta Validation
