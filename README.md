@@ -2,6 +2,12 @@
 
 Full stack job application tracker — Spring Boot + React + PostgreSQL
 
+## Live Demo
+🚀 **Live API:** https://job-tracker-production-939a.up.railway.app/swagger-ui/index.html
+📦 **GitHub:** https://github.com/spksouns/job-tracker
+
+---
+
 ## Tech Stack
 
 ### Backend
@@ -9,25 +15,35 @@ Full stack job application tracker — Spring Boot + React + PostgreSQL
 - Spring Data JPA + Hibernate
 - PostgreSQL
 - Spring Security + BCrypt
-- JWT Authentication
+- JWT Authentication (jjwt 0.12.6)
 - Google OAuth2 Login
-- Swagger UI (OpenAPI 3.0)
+- Swagger UI (springdoc-openapi 2.8.6)
 - Jakarta Validation
+- Docker (multi-stage build)
+- Deployed on Railway
 
-### Frontend (Coming Soon)
-- React + Vite + TailwindCSS
+### Frontend
+- React + Vite + TailwindCSS *(in progress)*
+
+---
 
 ## Features
 - ✅ User registration with BCrypt encryption
 - ✅ JWT login + Google OAuth2 login
 - ✅ Logout endpoint
-- ✅ User-specific company management
+- ✅ User-specific company management with ownership validation
 - ✅ Job application CRUD with ownership checks
-- ✅ Input validation
+- ✅ Filter jobs by status
+- ✅ Input validation (Jakarta Validation)
 - ✅ Global exception handling
 - ✅ Swagger UI documentation
-- ⏳ React frontend
-- ⏳ Deploy on Railway + Vercel
+- ✅ Unit tests — JUnit 5 + Mockito (18 tests)
+- ✅ Dockerized (multi-stage build)
+- ✅ Deployed on Railway with PostgreSQL
+- ⏳ React frontend (in progress)
+- ⏳ Deploy frontend on Vercel
+
+---
 
 ## Database Design
 
@@ -67,69 +83,68 @@ companies (1) ──── (many) jobs
 | role | VARCHAR | Job role/title |
 | salary_min | INTEGER | Minimum salary |
 | salary_max | INTEGER | Maximum salary |
-| status | ENUM | APPLIED/SHORTLISTED/INTERVIEW/REJECTED/OFFER |
-| work_mode | ENUM | REMOTE/ONSITE/HYBRID |
-| platform | VARCHAR | LinkedIn/Naukri etc |
+| status | ENUM | APPLIED / INTERVIEW / OFFERED / REJECTED / ACCEPTED / WITHDRAWN |
+| work_mode | ENUM | REMOTE / ONSITE / HYBRID |
+| platform | VARCHAR | LinkedIn / Naukri etc |
 | job_url | VARCHAR | Job posting URL |
 | notes | TEXT | Personal notes |
 | applied_date | DATE | Application date |
 | last_updated | TIMESTAMP | Last update time |
 
-## API Documentation
-After running locally, visit:
-```
-http://localhost:8080/swagger-ui/index.html
-```
+---
 
 ## API Endpoints
+
 | Method | URL | Description | Auth |
 |--------|-----|-------------|------|
 | POST | /api/auth/register | Register user | ❌ |
-| POST | /api/auth/login | Login get JWT | ❌ |
+| POST | /api/auth/login | Login — returns JWT | ❌ |
 | POST | /api/auth/logout | Logout | ✅ |
-| GET | /oauth2/authorization/google | Google login | ❌ |
-| GET | /api/companies | My companies | ✅ |
-| POST | /api/companies | Add company | ✅ |
+| GET | /oauth2/authorization/google | Google OAuth2 login | ❌ |
+| GET | /api/companies | Get my companies | ✅ |
+| POST | /api/companies | Create company | ✅ |
+| GET | /api/companies/{id} | Get company by ID | ✅ |
 | PUT | /api/companies/{id} | Update company | ✅ |
 | DELETE | /api/companies/{id} | Delete company | ✅ |
-| GET | /api/jobs | My jobs | ✅ |
-| POST | /api/jobs | Add job | ✅ |
-| GET | /api/jobs/{id} | Get job by id | ✅ |
-| GET | /api/jobs/status/{status} | Filter by status | ✅ |
+| GET | /api/jobs/user/{userId} | Get all my jobs | ✅ |
+| POST | /api/jobs | Create job | ✅ |
+| GET | /api/jobs/{id} | Get job by ID | ✅ |
+| GET | /api/jobs/user/{userId}/status?status=APPLIED | Filter by status | ✅ |
 | PUT | /api/jobs/{id} | Update job | ✅ |
 | DELETE | /api/jobs/{id} | Delete job | ✅ |
 
-## Setup
+---
+
+## Running Locally
 
 ### 1. Clone repo
 ```bash
 git clone https://github.com/spksouns/job-tracker.git
+cd job-tracker
 ```
 
 ### 2. Setup PostgreSQL
-- Install PostgreSQL
-- Create database: `job_tracker`
+```sql
+CREATE DATABASE job_tracker;
+```
 
 ### 3. Setup Google OAuth2 Credentials
 1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create new project → `job-tracker`
-3. Navigate to **APIs & Services → OAuth consent screen**
-    - User Type: External → Create
-    - Fill App name, support email → Save
-4. Navigate to **APIs & Services → Credentials**
-    - Click **Create Credentials → OAuth Client ID**
-    - Application type: **Web application**
-    - Authorized redirect URI:
-```
+2. Create project → `job-tracker`
+3. APIs & Services → OAuth consent screen → External → Create
+4. APIs & Services → Credentials → Create OAuth Client ID
+   - Application type: Web application
+   - Authorized redirect URI:
+     ```
      http://localhost:8080/login/oauth2/code/google
-```
-- Click Create → Copy **Client ID** and **Client Secret**
+     ```
+5. Copy Client ID and Client Secret
 
-### 4. Set environment variables
-```bash
-JWT_SECRET=your-secret-key-minimum-32-chars
-GOOGLE_CLIENT_ID=your-google-client-id
-GOOGLE_CLIENT_SECRET=your-google-client-secret
+### 4. Set environment variables (Windows)
+```powershell
+$env:JWT_SECRET="your-secret-key-minimum-32-chars"
+$env:GOOGLE_CLIENT_ID="your-google-client-id"
+$env:GOOGLE_CLIENT_SECRET="your-google-client-secret"
 ```
 
 ### 5. Configure application.properties
@@ -137,7 +152,7 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 cp src/main/resources/application.properties.example \
    src/main/resources/application.properties
 ```
-Fill in your PostgreSQL password and environment variables.
+Fill in your PostgreSQL password.
 
 ### 6. Run
 ```bash
@@ -147,3 +162,85 @@ Fill in your PostgreSQL password and environment variables.
 ### 7. Test
 - Swagger UI: http://localhost:8080/swagger-ui/index.html
 - Google login: http://localhost:8080/oauth2/authorization/google
+
+---
+
+## Running Tests
+```bash
+./gradlew clean test
+
+# View HTML report:
+# build/reports/tests/test/index.html
+```
+
+### Test Coverage
+- `JobServiceTest` — 7 tests (CRUD + ownership validation)
+- `CompanyServiceTest` — 6 tests (CRUD + ownership validation)
+- `AuthControllerTest` — 5 tests (register, login, error cases)
+
+---
+
+## Docker
+
+### Build image locally
+```bash
+docker build -t job-tracker .
+```
+
+### Run with Docker
+```bash
+docker run -p 8080:8080 \
+  -e JWT_SECRET=your_secret \
+  -e GOOGLE_CLIENT_ID=your_id \
+  -e GOOGLE_CLIENT_SECRET=your_secret \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host:5432/job_tracker \
+  -e SPRING_DATASOURCE_USERNAME=postgres \
+  -e SPRING_DATASOURCE_PASSWORD=your_password \
+  job-tracker
+```
+
+---
+
+## Deployment (Railway)
+
+App is live on Railway with PostgreSQL.
+
+**Live Swagger UI:**
+https://job-tracker-production-939a.up.railway.app/swagger-ui/index.html
+
+---
+
+## Project Structure
+
+```
+src/
+├── main/java/com/github/spksouns/job_tracker/
+│   ├── config/
+│   │   ├── SecurityConfig.java      # CORS + JWT filter + OAuth2
+│   │   ├── JwtUtil.java             # JWT generate + validate
+│   │   ├── JwtFilter.java           # JWT request filter
+│   │   └── OAuth2SuccessHandler.java
+│   ├── controller/
+│   │   ├── AuthController.java      # register, login, logout
+│   │   ├── CompanyController.java
+│   │   └── JobController.java
+│   ├── dto/
+│   │   └── LoginRequest.java
+│   ├── entity/
+│   │   ├── User.java
+│   │   ├── Company.java
+│   │   └── Job.java                 # Status + WorkMode enums
+│   ├── repository/
+│   │   ├── UserRepository.java
+│   │   ├── CompanyRepository.java
+│   │   └── JobRepository.java
+│   └── service/
+│       ├── JobService.java
+│       └── CompanyService.java
+└── test/java/com/github/spksouns/job_tracker/
+    ├── service/
+    │   ├── JobServiceTest.java
+    │   └── CompanyServiceTest.java
+    └── controller/
+        └── AuthControllerTest.java
+```
